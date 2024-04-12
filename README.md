@@ -159,10 +159,10 @@ resource "yandex_vpc_subnet" "subnet-1" {
     network_id = "${yandex_vpc_network.network-1.id}"
 }
 
-output "load_balancer_ip" {
-  value = "yandex_lb_network_load_balancer.lb_network_load_balancer-1.network_interface.0.ipv4_address"
+output "load_balancer_public_ip" {
+  description = "Public IP address of load balancer"
+  value = "${yandex_lb_network_load_balancer.lb_network_load_balancer-1.listener.*.external_address_spec[0].*.address}"
 }
-
 
 ```
 Проверка конфигурации terraform
