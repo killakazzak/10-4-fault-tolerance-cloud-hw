@@ -68,26 +68,36 @@ zone = "ru-central1-a"
 }
 
 resource "yandex_compute_instance" "vm" {
-count = 2
-name = "vm${count.index}"
-platform_id = "standart-v1"
-boot_disk {
-initialize_params {
-  image_id = "fd81mpc969gbg44vndkv"
-  size = 5
-}
-}
-network_interface {
-  subnet_id = yandex_vpc_subnet.subnet-1.id
-  nat = true
-}
-resources {
-  core_fraction = 5
-  cores = 2
-  memory = 2
+  count         = 2
+  name          = "vm${count.index}"
+  platform_id   = "standart-v1"
+
+  boot_disk {
+    initialize_params {
+      image_id  = "fd81mpc969gbg44vndkv"
+      size      = 5
+    }
+  }
+
+  network_interface {
+    subnet_id = yandex_vpc_subnet.subnet-1.id
+    nat = true
+  }
+  resources {
+    core_fraction = 5
+    cores = 2
+    memory = 2
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get update",
+      "sudo apt-get install -y nginx",
+      "sudo systemctl enable nginx",
+      "sudo systemctl start nginx"
+    ]
   }
 }
-
 resource "yandex_lb_target_group" "lb-target-group-1" {
   name      = "my-target-group"
   region_id = "ru-central1"
@@ -123,14 +133,14 @@ resource "yandex_lb_network_load_balancer" "lb_network_load_balancer-1" {
 }
 
 resource "yandex_vpc_network" "network-1" {
-name = "network1"
+  name = "network1"
 }
 
 resource "yandex_vpc_subnet" "subnet-1" {
-name = "subnet1"
-  zone = "ru-central1-a"
-  v4_cidr_blocks = ["192.168.10.0/24"]
-  network_id = "${yandex_vpc_network.network-1.id}"
+  name = "subnet1"
+    zone = "ru-central1-a"
+    v4_cidr_blocks = ["192.168.10.0/24"]
+    network_id = "${yandex_vpc_network.network-1.id}"
 }
 
 output "load_balancer_ip" {
@@ -355,6 +365,7 @@ Changes to Outputs:
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 Note: You didn't use the -out option to save this plan, so Terraform can't guarantee to take exactly these actions if you run "terraform apply" now.
+```
 
 ---
 
