@@ -35,6 +35,14 @@
 
 *3. Скриншот страницы, которая открылась при запросе IP-адреса балансировщика.*
 
+## Решение Задание 1 
+
+Установка terraform
+
+```bash
+cd /usr/local/src && wget https://hashicorp-releases.yandexcloud.net/terraform/1.8.0/terraform_1.8.0_linux_amd64.zip  && unzip terraform_1.8.0_linux_amd64.zip
+```
+
 ---
 
 ## Задания со звёздочкой*
@@ -42,7 +50,7 @@
 
 ---
 
-## Задание 2*
+## Решение Задание 2*
 
 1. Теперь вместо создания виртуальных машин создайте [группу виртуальных машин с балансировщиком нагрузки](https://cloud.yandex.ru/docs/compute/operations/instance-groups/create-with-balancer).
 
