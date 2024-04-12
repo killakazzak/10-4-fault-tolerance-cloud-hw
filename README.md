@@ -51,7 +51,7 @@ terraform --version
 
 
 Создание конфигурационного файла main.tf
-```tf
+```hcl
 terraform {
   required_providers {
     yandex = {
@@ -78,7 +78,7 @@ initialize_params {
 }
 }
 network_interface {
-  subnet_id = "yandex_vpc_subnet.subnet-1.id"
+  subnet_id = yandex_vpc_subnet.subnet-1.id
   nat = true
 }
 resources {
@@ -89,17 +89,17 @@ resources {
 }
 
 resource "yandex_lb_target_group" "lb-target-group-1" {
-  name      = "my-target-group1"
+  name      = "my-target-group"
   region_id = "ru-central1"
 
   target {
-    subnet_id = "${yandex_vpc_subnet.subnet-1.id}"
-    address   = "${yandex_compute_instance.vm.*.id}"
+    subnet_id = "yandex_vpc_subnet.subnet-1.id"
+    address   = "yandex_compute_instance.vm.*.id"
   }
 }
 
-resource "yandex_lb_network_load_balancer" "lb-network-balancer-1" {
-  name = "my-network-load-balancer1"
+resource "yandex_lb_network_load_balancer" "lb_network_load_balancer-1" {
+  name = "my-network-load-balancer"
 
   listener {
     name = "my-listener"
@@ -132,6 +132,11 @@ name = "subnet1"
   v4_cidr_blocks = ["192.168.10.0/24"]
   network_id = "${yandex_vpc_network.network-1.id}"
 }
+
+output "load_balancer_ip" {
+  value = "yandex_lb_network_load_balancer.lb_network_load_balancer-1.network_interface[0].ipv4_address"
+}
+
 
 ```
 Проверка конфигурации terraform
