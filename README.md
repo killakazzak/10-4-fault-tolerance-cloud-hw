@@ -66,6 +66,27 @@ cloud_id = "Pb1gp6qjp3sreksmq9ju1"
 folder_id = "b1g3hhpc4sj7fmtmdccu"
 zone = "ru-central1-a"
 }
+
+resource "yandex_compute_instance" "vm" {
+count = 2
+name = vm.${count.index}
+platform_id = "standart-v1"
+boot_disk {
+initializate_params {
+  image_id = "fd81mpc969gbg44vndkv"
+  size = 5
+}
+}
+network_interface {
+  subnet_id = yandex_vpc_subnet.subnet-1.id
+  nat = true
+}
+resources {
+  core_fraction = 5
+  cores = 2
+  memory = 2
+  }
+}
 ```
 Проверка конфигурации terraform
 
