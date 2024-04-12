@@ -152,8 +152,6 @@ terraform validate
 terraform plan
 ```
 ```
-[root@rocky8-server 10-4-fault-tollerance-hw]# terraform plan
-
 Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
   + create
 
@@ -269,6 +267,60 @@ Terraform will perform the following actions:
         }
     }
 
+  # yandex_lb_network_load_balancer.lb_network_load_balancer-1 will be created
+  + resource "yandex_lb_network_load_balancer" "lb_network_load_balancer-1" {
+      + created_at          = (known after apply)
+      + deletion_protection = (known after apply)
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + name                = "my-network-load-balancer"
+      + region_id           = (known after apply)
+      + type                = "external"
+
+      + attached_target_group {
+          + target_group_id = (known after apply)
+
+          + healthcheck {
+              + healthy_threshold   = 2
+              + interval            = 2
+              + name                = "http"
+              + timeout             = 1
+              + unhealthy_threshold = 2
+
+              + http_options {
+                  + path = "/ping"
+                  + port = 80
+                }
+            }
+        }
+
+      + listener {
+          + name        = "my-listener"
+          + port        = 80
+          + protocol    = (known after apply)
+          + target_port = (known after apply)
+
+          + external_address_spec {
+              + address    = (known after apply)
+              + ip_version = "ipv4"
+            }
+        }
+    }
+
+  # yandex_lb_target_group.lb-target-group-1 will be created
+  + resource "yandex_lb_target_group" "lb-target-group-1" {
+      + created_at = (known after apply)
+      + folder_id  = (known after apply)
+      + id         = (known after apply)
+      + name       = "my-target-group"
+      + region_id  = "ru-central1"
+
+      + target {
+          + address   = "yandex_compute_instance.vm.*.id"
+          + subnet_id = "yandex_vpc_subnet.subnet-1.id"
+        }
+    }
+
   # yandex_vpc_network.network-1 will be created
   + resource "yandex_vpc_network" "network-1" {
       + created_at                = (known after apply)
@@ -295,14 +347,14 @@ Terraform will perform the following actions:
       + zone           = "ru-central1-a"
     }
 
-Plan: 4 to add, 0 to change, 0 to destroy.
+Plan: 6 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + load_balancer_ip = "yandex_lb_network_load_balancer.lb_network_load_balancer-1.network_interface[0].ipv4_address"
 
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 Note: You didn't use the -out option to save this plan, so Terraform can't guarantee to take exactly these actions if you run "terraform apply" now.
-```
-
-
 
 ---
 
