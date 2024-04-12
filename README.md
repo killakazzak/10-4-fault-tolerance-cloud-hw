@@ -49,6 +49,22 @@ terraform --version
 ```
 ![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/1cd3b044-d82f-4100-9889-2d50e5630bbf)
 
+Создаем файл метаданных для подключения по ssh
+```
+vim /root/10-4-fault-tollerance-hw/metadata.yml
+```
+
+```yaml
+#cloud-config
+---
+users:
+  - name: denis
+    groups: sudo
+    shell: /bin/bash
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCn2HRe+qye95mzFDXwneCdGgzCBs1XTJH1t4XmGc4+DMOqjuP7zak+sEW7SB/K61v5cI163ULqjHKXq+3hQN5Nznf7P0oSlGPcby9/934pvO87nNaMBo5rdA0CWzNi9b4fNhv3ipMsNyYN1mIi9meuOFiwhMTMKP9UoWfylJK19/2be0shT6XHnoRrnCdq2Jn41lkb5+NoqT8voLtiILCLVUoK0t1TKRhH+nKZh/zPPSBO33vvFcnn/UC3X/FA3rf80MsjUgp3UkrclIXDo1ttRiIREhKY6GmbkIrJz4a6CQRXL1aZPBg5n3tgbjys4JdprjO5Cc8mDBUvs3p8L+c0Sp8gHHkVc2ZMBN2HCLd/LPO9b8PF8ZU/bafknTV4zF6Y/lK+f/lZz7dIpx/1UTe4ZBkO0Zm7naVbqjYZm1xdJj2MnY/HGr34li/0IaeNC3nHiuHrGIwn0jmok1NfAo4ELXxQ/OgMfN5UItyFpATVesgUNgFIdpkT4i0UzQCB0bU= denis@rocky8-server.dit.local
+```
 
 Создание конфигурационного файла main.tf
 ```hcl
