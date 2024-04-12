@@ -110,6 +110,11 @@ terraform validate
 ![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/c89aaff0-1365-4242-982b-0d5e00b4bd35)
 ![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/a570c7a1-5040-44ee-86a0-6d4ac21fe4e1)
 
+```
+terraform plan
+```
+
+
 
 
 ---
