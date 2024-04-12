@@ -40,7 +40,7 @@
 Установка terraform
 
 ```bash
-cd /usr/local/src && wget https://hashicorp-releases.yandexcloud.net/terraform/1.8.0/terraform_1.8.0_linux_amd64.zip  && unzip terraform_1.8.0_linux_amd64.zip
+cd /usr/local/src && wget https://hashicorp-releases.yandexcloud.net/terraform/1.8.0/terraform_1.8.0_linux_amd64.zip  && unzip terraform_1.8.0_linux_amd64.zip && cp terraform /usr/local/bin/
 ```
 
 ---
