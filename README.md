@@ -42,6 +42,30 @@
 ```bash
 cd /usr/local/src && wget https://hashicorp-releases.yandexcloud.net/terraform/1.8.0/terraform_1.8.0_linux_amd64.zip  && unzip terraform_1.8.0_linux_amd64.zip && cp terraform /usr/local/bin/
 ```
+Проверка установки terraform
+
+```bash
+terraform --version
+```
+![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/1cd3b044-d82f-4100-9889-2d50e5630bbf)
+
+Создание конфигурационного файла main.tf
+```tf
+terraform {
+  required_providers {
+    yandex = {
+      source = "yandex-cloud/yandex"
+    }
+  }
+}
+
+provider "yandex" {
+token = "y0_AgAAAAAEOSJRAATuwQAAAAD4DOe6Hsa8lMrhTTqHtIxgS6CaJBEa0Mg"
+cloud_id = "Pb1gp6qjp3sreksmq9ju1"
+folder_id = "b1g3hhpc4sj7fmtmdccu"
+zone = "ru-central1-a"
+}
+```
 
 ---
 
