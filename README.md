@@ -69,7 +69,7 @@ zone = "ru-central1-a"
 
 resource "yandex_compute_instance" "vm" {
 count = 2
-name = vm.${count.index}
+name = vm${count.index}
 platform_id = "standart-v1"
 boot_disk {
 initializate_params {
