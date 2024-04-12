@@ -90,6 +90,7 @@ resources {
 
 resource "yandex_vpc_network" "network-1" {
 name = "network1"
+}
 
 resource "yandex_vpc_subnet" "subnet-1" {
 name "subnet-1"
