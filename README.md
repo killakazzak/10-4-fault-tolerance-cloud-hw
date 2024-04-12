@@ -72,6 +72,10 @@ resource "yandex_compute_instance" "vm" {
   name          = "vm${count.index}"
   platform_id   = "standard-v1"
 
+  metadata = {
+    user-data   = "${file("./metadata.yml")}"
+  }
+
   boot_disk {
     initialize_params {
       image_id  = "fd81mpc969gbg44vndkv"
@@ -83,10 +87,18 @@ resource "yandex_compute_instance" "vm" {
     subnet_id = yandex_vpc_subnet.subnet-1.id
     nat = true
   }
+
   resources {
     core_fraction = 5
     cores = 2
     memory = 2
+  }
+
+  connection {
+    type        = "ssh"
+    user        = "denis"
+    private_key = file("/home/denis/.ssh/id_rsa")
+    host        = self.network_interface[0].nat_ip_address
   }
 
   provisioner "remote-exec" {
@@ -103,9 +115,14 @@ resource "yandex_lb_target_group" "lb-target-group-1" {
   region_id = "ru-central1"
 
   target {
-    subnet_id = "yandex_vpc_subnet.subnet-1.id"
-    address   = "yandex_compute_instance.vm.*.id"
+    subnet_id = "${yandex_vpc_subnet.subnet-1.id}"
+    address   = "${yandex_compute_instance.vm[0].network_interface.0.ip_address}"
   }
+  target {
+    subnet_id = "${yandex_vpc_subnet.subnet-1.id}"
+    address   = "${yandex_compute_instance.vm[1].network_interface.0.ip_address}"
+  }
+
 }
 
 resource "yandex_lb_network_load_balancer" "lb_network_load_balancer-1" {
@@ -124,9 +141,8 @@ resource "yandex_lb_network_load_balancer" "lb_network_load_balancer-1" {
 
     healthcheck {
       name = "http"
-      http_options {
+      tcp_options {
         port = 80
-        path = "/ping"
       }
     }
   }
@@ -144,8 +160,9 @@ resource "yandex_vpc_subnet" "subnet-1" {
 }
 
 output "load_balancer_ip" {
-  value = "yandex_lb_network_load_balancer.lb_network_load_balancer-1.network_interface[0].ipv4_address"
+  value = "yandex_lb_network_load_balancer.lb_network_load_balancer-1.network_interface.0.ipv4_address"
 }
+
 
 ```
 Проверка конфигурации terraform
@@ -179,9 +196,22 @@ Terraform will perform the following actions:
       + id                        = (known after apply)
       + maintenance_grace_period  = (known after apply)
       + maintenance_policy        = (known after apply)
+      + metadata                  = {
+          + "user-data" = <<-EOT
+                #cloud-config
+                ---
+                users:
+                  - name: denis
+                    groups: sudo
+                    shell: /bin/bash
+                    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+                    ssh-authorized-keys:
+                      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCn2HRe+qye95mzFDXwneCdGgzCBs1XTJH1t4XmGc4+DMOqjuP7zak+sEW7SB/K61v5cI163ULqjHKXq+3hQN5Nznf7P0oSlGPcby9/934pvO87nNaMBo5rdA0CWzNi9b4fNhv3ipMsNyYN1mIi9meuOFiwhMTMKP9UoWfylJK19/2be0shT6XHnoRrnCdq2Jn41lkb5+NoqT8voLtiILCLVUoK0t1TKRhH+nKZh/zPPSBO33vvFcnn/UC3X/FA3rf80MsjUgp3UkrclIXDo1ttRiIREhKY6GmbkIrJz4a6CQRXL1aZPBg5n3tgbjys4JdprjO5Cc8mDBUvs3p8L+c0Sp8gHHkVc2ZMBN2HCLd/LPO9b8PF8ZU/bafknTV4zF6Y/lK+f/lZz7dIpx/1UTe4ZBkO0Zm7naVbqjYZm1xdJj2MnY/HGr34li/0IaeNC3nHiuHrGIwn0jmok1NfAo4ELXxQ/OgMfN5UItyFpATVesgUNgFIdpkT4i0UzQCB0bU= denis@rocky8-server.dit.local
+            EOT
+        }
       + name                      = "vm0"
       + network_acceleration_type = "standard"
-      + platform_id               = "standart-v1"
+      + platform_id               = "standard-v1"
       + service_account_id        = (known after apply)
       + status                    = (known after apply)
       + zone                      = (known after apply)
@@ -234,9 +264,22 @@ Terraform will perform the following actions:
       + id                        = (known after apply)
       + maintenance_grace_period  = (known after apply)
       + maintenance_policy        = (known after apply)
+      + metadata                  = {
+          + "user-data" = <<-EOT
+                #cloud-config
+                ---
+                users:
+                  - name: denis
+                    groups: sudo
+                    shell: /bin/bash
+                    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+                    ssh-authorized-keys:
+                      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCn2HRe+qye95mzFDXwneCdGgzCBs1XTJH1t4XmGc4+DMOqjuP7zak+sEW7SB/K61v5cI163ULqjHKXq+3hQN5Nznf7P0oSlGPcby9/934pvO87nNaMBo5rdA0CWzNi9b4fNhv3ipMsNyYN1mIi9meuOFiwhMTMKP9UoWfylJK19/2be0shT6XHnoRrnCdq2Jn41lkb5+NoqT8voLtiILCLVUoK0t1TKRhH+nKZh/zPPSBO33vvFcnn/UC3X/FA3rf80MsjUgp3UkrclIXDo1ttRiIREhKY6GmbkIrJz4a6CQRXL1aZPBg5n3tgbjys4JdprjO5Cc8mDBUvs3p8L+c0Sp8gHHkVc2ZMBN2HCLd/LPO9b8PF8ZU/bafknTV4zF6Y/lK+f/lZz7dIpx/1UTe4ZBkO0Zm7naVbqjYZm1xdJj2MnY/HGr34li/0IaeNC3nHiuHrGIwn0jmok1NfAo4ELXxQ/OgMfN5UItyFpATVesgUNgFIdpkT4i0UzQCB0bU= denis@rocky8-server.dit.local
+            EOT
+        }
       + name                      = "vm1"
       + network_acceleration_type = "standard"
-      + platform_id               = "standart-v1"
+      + platform_id               = "standard-v1"
       + service_account_id        = (known after apply)
       + status                    = (known after apply)
       + zone                      = (known after apply)
@@ -299,8 +342,7 @@ Terraform will perform the following actions:
               + timeout             = 1
               + unhealthy_threshold = 2
 
-              + http_options {
-                  + path = "/ping"
+              + tcp_options {
                   + port = 80
                 }
             }
@@ -328,8 +370,12 @@ Terraform will perform the following actions:
       + region_id  = "ru-central1"
 
       + target {
-          + address   = "yandex_compute_instance.vm.*.id"
-          + subnet_id = "yandex_vpc_subnet.subnet-1.id"
+          + address   = (known after apply)
+          + subnet_id = (known after apply)
+        }
+      + target {
+          + address   = (known after apply)
+          + subnet_id = (known after apply)
         }
     }
 
@@ -362,7 +408,7 @@ Terraform will perform the following actions:
 Plan: 6 to add, 0 to change, 0 to destroy.
 
 Changes to Outputs:
-  + load_balancer_ip = "yandex_lb_network_load_balancer.lb_network_load_balancer-1.network_interface[0].ipv4_address"
+  + load_balancer_ip = "yandex_lb_network_load_balancer.lb_network_load_balancer-1.network_interface.0.ipv4_address"
 
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -372,6 +418,9 @@ Note: You didn't use the -out option to save this plan, so Terraform can't guara
 ```
 terraform apply
 ```
+![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/04b6744d-4d1c-4ac4-99a3-fd6eacab4b99)
+
+![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/ac3c7741-1c86-436e-ae44-7c394dcef528)
 
 
 ---
