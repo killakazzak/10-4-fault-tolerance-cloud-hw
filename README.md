@@ -451,7 +451,7 @@ terraform apply
 
 ---
 
-## Решение Задание 2*
+## Задание 2*
 
 1. Теперь вместо создания виртуальных машин создайте [группу виртуальных машин с балансировщиком нагрузки](https://cloud.yandex.ru/docs/compute/operations/instance-groups/create-with-balancer).
 
@@ -474,3 +474,140 @@ terraform apply
 *2. Скриншот статуса балансировщика и целевой группы.*
 
 *3. Скриншот страницы, которая открылась при запросе IP-адреса балансировщика.*
+
+## Решение Задание 2*
+
+Файл конфигурации main.tf
+```hcl
+terraform {
+  required_providers {
+    yandex = {
+      source = "yandex-cloud/yandex"
+    }
+  }
+}
+
+provider "yandex" {
+  token = "y0_AgAAAAAEOSJRAATuwQAAAAD4DOe6Hsa8lMrhTTqHtIxgS6CaJBEa0Mg"
+  cloud_id = "Pb1gp6qjp3sreksmq9ju1"
+  folder_id = "b1g3hhpc4sj7fmtmdccu"
+  zone = "ru-central1-a"
+
+}
+resource "yandex_iam_service_account" "tenda" {
+  name        = "tenda"
+  description = "Сервисный аккаунт для управления группой ВМ."
+}
+
+resource "yandex_resourcemanager_folder_iam_member" "editor" {
+  folder_id = "b1g3hhpc4sj7fmtmdccu"
+  role      = "editor"
+  member    = "serviceAccount:${yandex_iam_service_account.tenda.id}"
+}
+
+resource "yandex_vpc_security_group" "vm_group_sg" {
+  ingress {
+    protocol          = "ANY"
+    description       = "Allow incoming traffic from members of the same security group"
+    from_port         = 0
+    to_port           = 65535
+    predefined_target = "self_security_group"
+  }
+
+  egress {
+   protocol          = "ANY"
+   description       = "Allow outgoing traffic to members of the same security group"
+   from_port         = 0
+   to_port           = 65535
+   predefined_target = "self_security_group"
+  }
+}
+
+
+resource "yandex_compute_instance_group" "ig-1" {
+  name                = "fixed-ig-with-balancer"
+  folder_id           = "b1g3hhpc4sj7fmtmdccu"
+  service_account_id  = "${yandex_iam_service_account.ig-sa.id}"
+  deletion_protection = "false"
+  instance_template {
+    platform_id = "standard-v3"
+    resources {
+      memory = 2
+      cores  = 2
+          core_fraction = 5
+    }
+
+    boot_disk {
+      initialize_params {
+      image_id  = "fd81mpc969gbg44vndkv"
+      size      = 5
+      }
+    }
+
+    network_interface {
+      network_id         = "${yandex_vpc_network.network-1.id}"
+      subnet_ids         = ["${yandex_vpc_subnet.subnet-1.id}"]
+      security_group_ids = ["vm_group_sg"]
+    }
+
+    metadata = {
+      user-data   = "${file("./metadata.yml")}"
+    }
+}
+  scale_policy {
+    fixed_scale {
+      size = 2
+    }
+  }
+
+  allocation_policy {
+    zones = ["ru-central1-a"]
+  }
+
+  deploy_policy {
+    max_unavailable = 1
+    max_expansion   = 0
+  }
+
+  load_balancer {
+    target_group_name        = "target-group"
+    target_group_description = "Целевая группа Network Load Balancer"
+  }
+}
+
+resource "yandex_lb_network_load_balancer" "lb-1" {
+  name = "network-load-balancer-1"
+
+  listener {
+    name = "network-load-balancer-1-listener"
+    port = 80
+    external_address_spec {
+      ip_version = "ipv4"
+    }
+  }
+
+  attached_target_group {
+    target_group_id = yandex_compute_instance_group.ig-1.load_balancer.0.target_group_id
+
+    healthcheck {
+      name = "http"
+      http_options {
+        port = 80
+        path = "/"
+      }
+    }
+  }
+}
+
+resource "yandex_vpc_network" "network-1" {
+  name = "network1"
+}
+
+resource "yandex_vpc_subnet" "subnet-1" {
+  name           = "subnet1"
+  zone           = "ru-central1-a"
+  network_id     = "${yandex_vpc_network.network-1.id}"
+  v4_cidr_blocks = ["192.168.10.0/24"]
+}
+```
+
