@@ -137,7 +137,6 @@ output "load_balancer_ip" {
   value = "yandex_lb_network_load_balancer.lb_network_load_balancer-1.network_interface[0].ipv4_address"
 }
 
-
 ```
 Проверка конфигурации terraform
 
