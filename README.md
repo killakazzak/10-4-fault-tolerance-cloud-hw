@@ -64,7 +64,7 @@ provider "yandex" {
 token = "y0_AgAAAAAEOSJRAATuwQAAAAD4DOe6Hsa8lMrhTTqHtIxgS6CaJBEa0Mg"
 cloud_id = "Pb1gp6qjp3sreksmq9ju1"
 folder_id = "b1g3hhpc4sj7fmtmdccu"
-zone = "ru-central1-b"
+zone = "ru-central1-a"
 }
 
 resource "yandex_compute_instance" "vm" {
@@ -94,7 +94,7 @@ name = "network1"
 
 resource "yandex_vpc_subnet" "subnet-1" {
 name = "subnet1"
-  zone = "ru-central1-b"
+  zone = "ru-central1-a"
   v4_cidr_blocks = ["192.168.10.0/24"]
   network_id = "${yandex_vpc_network.network-1.id}"
 }
