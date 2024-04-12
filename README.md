@@ -72,7 +72,7 @@ count = 2
 name = "vm${count.index}"
 platform_id = "standart-v1"
 boot_disk {
-initializate_params {
+initialize_params {
   image_id = "fd81mpc969gbg44vndkv"
   size = 5
 }
