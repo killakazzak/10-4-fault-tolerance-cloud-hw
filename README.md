@@ -418,6 +418,11 @@ Note: You didn't use the -out option to save this plan, so Terraform can't guara
 ```
 terraform apply
 ```
+
+![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/4a983907-e8e0-4ae3-b08a-ee722b62ef06)
+
+![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/7f222939-3fd8-4bdf-8dd3-72884061d9ca)
+
 ![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/04b6744d-4d1c-4ac4-99a3-fd6eacab4b99)
 
 ![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/ac3c7741-1c86-436e-ae44-7c394dcef528)
