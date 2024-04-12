@@ -70,7 +70,7 @@ zone = "ru-central1-a"
 resource "yandex_compute_instance" "vm" {
   count         = 2
   name          = "vm${count.index}"
-  platform_id   = "standart-v1"
+  platform_id   = "standard-v1"
 
   boot_disk {
     initialize_params {
@@ -368,6 +368,11 @@ Changes to Outputs:
 
 Note: You didn't use the -out option to save this plan, so Terraform can't guarantee to take exactly these actions if you run "terraform apply" now.
 ```
+Применяем конфигурацию
+```
+terraform apply
+```
+
 
 ---
 
