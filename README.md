@@ -89,7 +89,7 @@ resource "yandex_compute_instance" "vm" {
   platform_id   = "standard-v1"
 
   metadata = {
-    user-data   = "${file("./metadata.yml")}"
+    user-data   = "${file("./meta.yml")}"
   }
 
   boot_disk {
