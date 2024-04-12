@@ -153,10 +153,12 @@ output "load_balancer_ip" {
 ```
 terraform init
 terraform validate
-```
 
-![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/c89aaff0-1365-4242-982b-0d5e00b4bd35)
-![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/a570c7a1-5040-44ee-86a0-6d4ac21fe4e1)
+```
+![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/f6e974c5-d942-4cbc-b268-fbc3e772e490)
+
+![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/ef5110d7-f7bc-454b-af51-93993d2b201b)
+
 
 ```
 terraform plan
