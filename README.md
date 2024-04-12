@@ -48,7 +48,6 @@ cd /usr/local/src && wget https://hashicorp-releases.yandexcloud.net/terraform/1
 terraform --version
 ```
 ![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/1cd3b044-d82f-4100-9889-2d50e5630bbf)
-![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/2ef80395-c2d1-4f0a-8a3d-58593d86a2f6)
 
 
 Создание конфигурационного файла main.tf
