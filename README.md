@@ -511,6 +511,7 @@ resource "yandex_vpc_security_group" "vm_group_sg" {
   ingress {
     protocol          = "ANY"
     description       = "Allow incoming traffic from members of the same security group"
+    v4_cidr_blocks    = ["0.0.0.0/0"]
     from_port         = 0
     to_port           = 65535
     predefined_target = "self_security_group"
@@ -519,6 +520,7 @@ resource "yandex_vpc_security_group" "vm_group_sg" {
   egress {
    protocol          = "ANY"
    description       = "Allow outgoing traffic to members of the same security group"
+   v4_cidr_blocks    = ["0.0.0.0/0"]
    from_port         = 0
    to_port           = 65535
    predefined_target = "self_security_group"
