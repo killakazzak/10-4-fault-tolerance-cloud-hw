@@ -483,6 +483,7 @@ terraform {
   required_providers {
     yandex = {
       source = "yandex-cloud/yandex"
+      version = "0.115.0"
     }
   }
 }
@@ -494,18 +495,19 @@ provider "yandex" {
   zone = "ru-central1-a"
 
 }
-resource "yandex_iam_service_account" "tenda" {
-  name        = "tenda"
+resource "yandex_iam_service_account" "lamos" {
+  name        = "lamos"
   description = "Сервисный аккаунт для управления группой ВМ."
 }
 
 resource "yandex_resourcemanager_folder_iam_member" "editor" {
   folder_id = "b1g3hhpc4sj7fmtmdccu"
   role      = "editor"
-  member    = "serviceAccount:${yandex_iam_service_account.tenda.id}"
+  member    = "serviceAccount:${yandex_iam_service_account.lamos.id}"
 }
 
 resource "yandex_vpc_security_group" "vm_group_sg" {
+  network_id = "${yandex_vpc_network.network-1.id}"
   ingress {
     protocol          = "ANY"
     description       = "Allow incoming traffic from members of the same security group"
@@ -527,14 +529,13 @@ resource "yandex_vpc_security_group" "vm_group_sg" {
 resource "yandex_compute_instance_group" "ig-1" {
   name                = "fixed-ig-with-balancer"
   folder_id           = "b1g3hhpc4sj7fmtmdccu"
-  service_account_id  = "${yandex_iam_service_account.ig-sa.id}"
+  service_account_id  = "${yandex_iam_service_account.lamos.id}"
   deletion_protection = "false"
   instance_template {
     platform_id = "standard-v3"
     resources {
       memory = 2
       cores  = 2
-          core_fraction = 5
     }
 
     boot_disk {
@@ -545,15 +546,16 @@ resource "yandex_compute_instance_group" "ig-1" {
     }
 
     network_interface {
+      nat = true
       network_id         = "${yandex_vpc_network.network-1.id}"
       subnet_ids         = ["${yandex_vpc_subnet.subnet-1.id}"]
-      security_group_ids = ["vm_group_sg"]
+      security_group_ids = ["${yandex_vpc_security_group.vm_group_sg.id}"]
     }
 
     metadata = {
-      user-data   = "${file("./metadata.yml")}"
+      user-data   = "${file("./meta.yaml")}"
     }
-}
+  }
   scale_policy {
     fixed_scale {
       size = 2
@@ -609,4 +611,10 @@ resource "yandex_vpc_subnet" "subnet-1" {
   network_id     = "${yandex_vpc_network.network-1.id}"
   v4_cidr_blocks = ["192.168.10.0/24"]
 }
+
+output "load_balancer_public_ip" {
+  description = "Public IP address of load balancer"
+  value = "${yandex_lb_network_load_balancer.lb-1.listener.*.external_address_spec[0].*.address}"
+}
+
 ```
