@@ -538,6 +538,7 @@ resource "yandex_compute_instance_group" "ig-1" {
     resources {
       memory = 2
       cores  = 2
+      core_fraction = 20
     }
 
     boot_disk {
