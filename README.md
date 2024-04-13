@@ -556,7 +556,7 @@ resource "yandex_compute_instance_group" "ig-1" {
     }
 
     metadata = {
-      user-data   = "${file("./meta.yaml")}"
+      user-data   = "${file("./meta.yml")}"
     }
   }
   scale_policy {
@@ -621,3 +621,13 @@ output "load_balancer_public_ip" {
 }
 
 ```
+
+Файл конфигурации meta.yml
+
+Проверка состояния и работы балансировщика
+
+![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/98816ead-a797-4597-b42f-0685618cd18b)
+
+
+![image](https://github.com/killakazzak/10-4-fault-tolerance-cloud-hw/assets/32342205/b10cdbe5-8ba0-4a71-877c-f1075bae2ae0)
+
