@@ -106,6 +106,6 @@ resource "yandex_vpc_subnet" "subnet-1" {
 }
 
 output "load_balancer_public_ip" {
-  description = "Public IP address of load balancer"
+  description = "Public IP address of load balancer!"
   value       = yandex_lb_network_load_balancer.lb_network_load_balancer-1.listener.*.external_address_spec[0].*.address
 }
