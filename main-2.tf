@@ -1,19 +1,5 @@
-provider_installation {
-  network_mirror {
-    url = "https://terraform-mirror.yandexcloud.net/"
-    include = ["registry.terraform.io/*/*"]
-  }
-  direct {
-    exclude = ["registry.terraform.io/*/*"]
-  }
-}
-```
-
-
-Файл конфигурации main.tf
-```hcl
 terraform {
-  required_providers {
+     required_providers {
     yandex = {
       source = "yandex-cloud/yandex"
       version = "0.115.0"
@@ -52,7 +38,7 @@ resource "yandex_vpc_security_group" "vm_group_sg" {
 
   egress {
    protocol          = "ANY"
-     description       = "Allow outgoing traffic to members of the same security group"
+   description       = "Allow outgoing traffic to members of the same security group"
    v4_cidr_blocks    = ["0.0.0.0/0"]
    from_port         = 0
    to_port           = 65535
